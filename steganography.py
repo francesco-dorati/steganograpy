@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from getopt import getopt
 from sys import argv, exit
 
@@ -6,10 +8,6 @@ from termcolor import colored
 
 """
     TODO:
-    -   ascii art, colors and status
-    -   main
-    -   possibility to use text
-    -   add shebang
 """
 def main():
     EOF_length = 16
