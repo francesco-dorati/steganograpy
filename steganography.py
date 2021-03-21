@@ -6,9 +6,6 @@ from sys import argv, exit
 from PIL import Image
 from termcolor import colored
 
-"""
-    TODO:
-"""
 def main():
     EOF_length = 16
 
@@ -166,7 +163,7 @@ def main():
 
         # write to file
         if outfile:
-            out.write(text)
+            out.write(text.strip('\0'))
         
         # completed message
         print(colored('Text decrypted successfully!', 'green', attrs=['bold'])) 
