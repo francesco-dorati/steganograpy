@@ -3,19 +3,60 @@ from sys import argv, exit
 
 from PIL import Image
 
-opt, args = getopt(argv[1:], "e:d")
+"""
+    TODO:
+    -   ascii art, colors and status
+    -   usage strganograpy [encrypt|decrypt] -i file [-d datafile] [-o file]
+    -   add shebang
+"""
 
-end_length = 16
+EOF_length = 16
 
-if len(opt) != 1 or len(args) != 1:
-    print(f"Usage: {argv[0]} [-e txtfile | -d] <filename>")
+# check correct action
+action = argv[1]
+if action not in ['encrypt', 'decrypt']:
+    print(f'Invalid action "{action}".')
     exit(1)
 
-if opt[0][0] == "-e":
-    img = Image.open(args[0])
-    out = Image.new("RGBA", img.size, 0xffffff)
+opts, args = getopt(argv[2:], "i:d:o:")
 
-    txt = open(opt[0][1], "r").read()
+
+# check correct args
+if (action == 'encrypt' and len(opts) < 2) or (action == 'decrypt' and len(opts) < 1):
+    print(f'Usage: {argv[0]} [encrypt|decrypt] -i infile [-d datafile] [-o outfile]')
+    exit(1)
+
+
+# check for opt presence
+infile = None
+outfile = None
+datafile = None
+for opt in opts:
+    if opt[0] == '-i':
+        infile = opt[1]
+    elif opt[0] == '-o':
+        outfile = opt[1]
+    elif opt[0] == '-d':
+        datafile = opt[1]
+    
+if infile == None:
+    print("Missing infile.")
+    exit(1)
+ 
+
+# encrypt
+if action == 'encrypt':
+    # check datafile presence
+    if datafile == None:
+        print("Missing datafile.")
+        exit(1)
+
+    # open files 
+    img = Image.open(infile)
+    out = Image.new("RGBA", img.size, 0xffffff)
+    txt = open(datafile, "r").read()
+
+    ######
 
     binary = list(''.join(format(ord(i), '08b') for i in txt) + '0' * end_length)
 
@@ -36,7 +77,8 @@ if opt[0][0] == "-e":
             out.putpixel((x, y), (r, g, b, a))
 
     out.save('out.png')
-    
+
+    txt.close()
     print("Done!")
 else:
     img = Image.open(args[0])
