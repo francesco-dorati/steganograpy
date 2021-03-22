@@ -1,4 +1,6 @@
 # Steganograpy
+#### Video demo: https://youtu.be/_u5dhcBEOY8
+
 __Steganography__ is the practice of concealing a message within another message or a physical object.  
 In computing/electronic contexts, a computer file, message, image, or video is concealed within another file, message, image, or video.
 
@@ -40,4 +42,3 @@ Without outfile:
 ```
 steganograpy.py decrypt -i infile.png
 ```
-
