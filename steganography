@@ -174,7 +174,7 @@ def main():
         if outfile:
             print(colored('Decrypted message is in ', attrs=['bold']) + colored(outfile, 'blue', attrs=['bold']))
         else:
-            print(colored('Message:', attrs=['bold']))
+            print(colored('\nMessage:', attrs=['bold']))
             print(text)
 
 
