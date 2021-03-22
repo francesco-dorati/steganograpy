@@ -1,10 +1,12 @@
 # Steganograpy
-## Video demo: https://youtu.be/_u5dhcBEOY8
-## Description:
+#### Video demo: https://youtu.be/_u5dhcBEOY8
+#### Description:
 __Steganography__ is the practice of concealing a message within another message or a physical object.
 In computing/electronic contexts, a computer file, message, image, or video is concealed within another file, message, image, or video.
 
 This program conceals a text message within an image using the __LSB algorithm__.
+
+#### Programming language: Python 3.9
 
 ### LSB Algorithm
 Least Significat Bit (LSB) Algorithm is a steganographic algorithm that is able to conceal a message within an image by modifying its least significant two-bits.
@@ -33,6 +35,8 @@ With a string:
 ```
 steganograpy.py encrypt -i infile.png -m "Message Here." [-o outfile.png]
 ```
+If no outfile specified, the outfile will be `out.png`
+
 #### Decrypt
 With a txt outfile:
 ```
@@ -42,3 +46,7 @@ Without outfile:
 ```
 steganograpy.py decrypt -i infile.png
 ```
+
+### Files
+- steganograpy: main file
+- reqirements.txt: reqirements
