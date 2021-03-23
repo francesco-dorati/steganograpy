@@ -6,9 +6,9 @@ In computing/electronic contexts, a computer file, message, image, or video is c
 
 This program conceals a text message within an image using the __LSB algorithm__.
 
-**Programming language**: Python 3.9
-**Library for images**: Pillow (PIL)
-**Library for terminal colors**: termcolors
+**Programming language**: Python 3.9  
+**Library for images**: Pillow (PIL) 
+**Library for terminal colors**: termcolors  
 
 ### LSB Algorithm
 Least Significat Bit (LSB) Algorithm is a steganographic algorithm that is able to conceal a message within an image by modifying its least significant two-bits.
