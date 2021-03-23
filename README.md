@@ -29,16 +29,77 @@ Since only the least significat bits are modified, the diffference between the t
 ### Process
 Pseudocode for the process:
 #### Encrypt
-- transform user input into binary and add 16x`'0'` at the end
-- loop through the image
-  - get pixel colors
-  - modify pixel colors
-  - save updated pixel colors to outfile
-- write changes to outfile
+1. transform user input into binary and add 16x`'0'` at the end
+```python
+ binary = list(''.join(format(ord(i), '08b') for i in txt) + '0' * EOF_length)
+```
+2. loop through the image
+    1. get pixel colors
+    2. modify pixel colors
+    3. save updated pixel colors to outfile
+```python
+width, height = img.size
+for x in range(width):
+    for y in range(height):
+        # get pixel colors
+        if img.format == 'PNG':
+            r, g, b, a = img.getpixel((x, y))
+        else:
+            r, g, b = img.getpixel((x, y))
+
+        if binary:
+            r = int(format(r, '010b')[:-2] + binary.pop(0) + binary.pop(0), 2)
+
+        if binary:
+            g = int(format(g, '010b')[-2:] + binary.pop(0) + binary.pop(0), 2)
+
+        if binary:
+            b = int(format(b, '010b')[-2:] + binary.pop(0) + binary.pop(0), 2)
+
+        # put pixel on out image
+        if img.format == 'PNG':
+            out.putpixel((x, y), (r, g, b, a))
+        else:
+            out.putpixel((x, y), (r, g, b, 255))
+```
+3. write changes to outfile
+```python
+out.save(outfile if outfile else f'out.png')
+```
 #### Decrypt
-- loop through the image until 16x`'0'` found
-  - read least two significat bytes and save them into a variable
-- transform binary into text
+1. loop through the image until 16x`'0'` found
+    1. read least two significat bytes and save them into a variable
+```python
+width, height = img.size
+for x in range(width):
+    for y in range(height):
+        # get pixel colors
+        r, g, b, a = img.getpixel((x, y))
+
+        binary += format(r, '010b')[-2:]
+        if binary[-EOF_length:] == '0' * EOF_length:
+            break
+
+        binary += format(g, '010b')[-2:]
+        if binary[-EOF_length:] == '0' * EOF_length:
+            break
+
+        binary += format(b, '010b')[-2:]
+        if binary[-EOF_length:] == '0' * EOF_length:
+            break
+
+    if binary[-EOF_length:] == '0' * EOF_length:
+        break
+ 
+binary = binary[:-EOF_length]
+```
+2. transform binary into text
+```python
+num = int(binary, 2)
+byte = num.bit_length() + 7 // 8
+arr = num.to_bytes(byte, "big")
+text = arr.decode()
+```
 
 ### Usage
 
