@@ -3,144 +3,7 @@
 import sys
 from getopt import getopt
 
-try:
-    from PIL import Image
-except ImportError:
-    print('Missing packages, run `python3 -m pip install -r requirementes.txt`')
-    exit(1)
-
-class Steganography:
-    def __init__(self, action, img_path: str | None, message: str | None):
-        self.EOF_LENGTH = 16
-
-        self.action = action
-        self.message = message
-        if img_path:
-            self.img = self.load_image(img_path)
-        else:
-            self.img = self.create_random_image() # IMPLEMENT
-
-    def start(self):
-        if self.action == 'encode':
-            if not self.img:
-                pass#########################à
-
-            if not self.message:
-                self.message = input('Text: ')
-            
-            binary = self.text_to_binary(self.message)
-            encoded = self.encode(self.img, binary)
-            encoded.save('out.png')
-
-            self.img.close()
-            encoded.close()
-
-
-        elif self.action == 'decode':
-            pass
-        else: 
-            exit()
-
-
-    def load_image(self, path) -> Image:
-        return Image.open(path)
-
-    def create_image(self, size: tuple = (1920, 1080)) -> Image:
-        # fix
-        return Image.new("RGBA", size, 0xffffff)
-
-    def encode(self, img: Image, binary: str) -> Image:
-        out = self.create_image()
-
-        binary = binary + '0' * self.EOF_LENGTH
-
-        # loop for image pixels
-        width, height = img.size
-        for x in range(width):
-            for y in range(height):
-                # read pixel from image
-                if img.format == 'PNG':
-                    r, g, b, a = img.getpixel((x, y))
-                else:
-                    r, g, b = img.getpixel((x, y))
-
-                # modify pixel value
-                if binary:
-                    r_binary = bin(r)[:-2] + binary.pop(0) + binary.pop(0)
-                    r = int(r_binary, 2)
-
-                if binary:
-                    g_binary = bin(g)[:-2] + binary.pop(0) + binary.pop(0)
-                    g = int(g_binary, 2)
-
-                if binary:
-                    b_binary = bin(b)[:-2] + binary.pop(0) + binary.pop(0)
-                    b = int(b_binary, 2)
-
-                # write pixel on out image
-                if img.format == 'PNG':
-                    out.putpixel((x, y), (r, g, b, a))
-                else:
-                    out.putpixel((x, y), (r, g, b, 255))
-        return out
-
-        # # close file
-        # img.close()
-        # out.close()
-
-    def decode(self, img: Image) -> str:
-        binary = ''
-
-        # loop for image pixel
-        width, height = img.size
-        for x in range(width):
-            for y in range(height):
-                # read pixel from image
-                r, g, b, _ = img.getpixel((x, y))
-
-                # extract message from image pixel
-                binary += bin(r)[-2:]
-                if binary[-self.EOF_LENGTH:] == '0' * self.EOF_LENGTH:
-                    break
-
-                binary += bin(g)[-2:]
-                if binary[-self.EOF_LENGTH:] == '0' * self.EOF_LENGTH:
-                    break
-
-                binary += bin(b)[-2:]
-                if binary[-self.EOF_LENGTH:] == '0' * self.EOF_LENGTH:
-                    break
-
-            if binary[-self.EOF_LENGTH:] == '0' * self.EOF_LENGTH:
-                break
-
-        return binary[:-self.EOF_LENGTH]
-
-    def text_to_binary(self, text: str) -> str:
-        binary = ''
-        encoded_text = text.encode('utf-8')
-
-        for word in encoded_text:
-            byte = bin(word)[2:]
-
-            if len(byte) != 8:
-                byte = '0' * (8 - len(byte)) + byte
-
-            binary += byte
-        
-        return binary
-
-    def binary_to_text(self, binary: str) -> str:
-        text = ''
-
-        while binary:
-            byte = binary[:8]
-            char = chr(int(byte, 2))
-            text += char
-
-            binary = binary[8:]
-        
-        return text
+from steganography import Steganography
 
 def main():
     if len(sys.argv) < 2:
@@ -155,11 +18,11 @@ def main():
         exit(1)
 
     # check for opt presence
-    img = None
+    img_path = None
     message = None
     for opt in opts:
         if opt[0] == '-i':
-            img = opt[1]
+            img_path = opt[1]
 
         elif opt[0] == '-f':
             with open(opt[1]) as file:
@@ -169,39 +32,20 @@ def main():
             message = opt[1]
     
 
-#################################################################################
-    # s = Steganograpy(action, img, message)
-    # s.start()
-
-    # s = Steganograpy(action, img)
-#################################################################################
-
-    s = Steganography(action, img, message)
+    s = Steganography()
 
     if action == 'encode':
         # img
-        if infile_path:
-            img = s.load_image(infile_path)
+        if img_path:
+            img = s.load_image(img_path)
         else:
             img = s.create_random_image()
         
         # text
-        if not textfile_path and not message:
+        if not message:
             text = input('Text: ')
-        elif textfile_path:
-            with open(textfile_path) as file:
-                text = file.read()
-        elif message:
-            text = message
-        else:
-            print_help()
-            exit(1)
-        
-        binary = s.text_to_binary(text)
-
-        new = s.encode(binary, img)
-        new.save(outfile_path if outfile_path else 'out.png')
-        new.close()
+ 
+        s.encode(img_path, message)
     
 
 def print_help():
