@@ -34,18 +34,17 @@ def main():
 
     s = Steganography()
 
-    if action == 'encode':
-        # img
-        if img_path:
-            img = s.load_image(img_path)
-        else:
-            img = s.create_random_image()
-        
+    if action == 'encode':    
         # text
         if not message:
             text = input('Text: ')
  
-        s.encode(img_path, message)
+        outfile = s.encode(img_path, message)
+        print(f'New file created: {outfile}')
+        
+    else:
+        text = s.decode(img_path)
+        print(f'Text: {text}')
     
 
 def print_help():

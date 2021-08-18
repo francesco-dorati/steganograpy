@@ -1,19 +1,22 @@
 class Steganography:
+    try:
+        from PIL import Image
+    except ImportError:
+        print('Missing packages, run `python3 -m pip install -r requirementes.txt`')
+        exit(1)
+
     def __init__(self, eof=16, bits=2):
-        try:
-            from PIL import Image
-        except ImportError:
-            print('Missing packages, run `python3 -m pip install -r requirementes.txt`')
-            exit(1)
 
         self.EOF_LENGTH = eof
         self.BITS = bits
 
     def encode(self, img_path: str, text: str) -> str:
+        out_name = 'out.png'
+
         img = self.Image.open(img_path)
         out = self.Image.new("RGBA", img.size, 0xffffff)
 
-        binary = self.__to_binary(text) + ('0' * self.EOF_LENGTH)
+        binary = list(self.__to_binary(text) + ('0' * self.EOF_LENGTH))
 
         # loop for image pixels
         width, height = img.size
@@ -29,7 +32,8 @@ class Steganography:
                 new_colors = []
                 for color in (r, g, b):
                     if not binary:
-                        break
+                        new_colors.append(color)
+                        continue
 
                     binary_color = bin(color)[:-self.BITS]
                     for _ in range(self.BITS):
@@ -46,58 +50,55 @@ class Steganography:
                 else:
                     out.putpixel((x, y), (*new_colors, 255))
 
+
         # save new image
-        out.save('out.png')
-        print(out.filename())
+        out.save(out_name)
 
         # close images 
         img.close()
         out.close()
 
-
+        return out_name
 
 
     def decode(self, img_path: str) -> str:
-        pass
-
-    def __to_binary(self, text: str):
-        pass
-
-    ##########
-    def decode(self, img) -> str:
         binary = ''
 
-        # loop for image pixel
+        img = self.Image.open(img_path)
+
+        # check image format
+        if img.format != 'PNG':
+            print('Invalid image format.')
+            exit(1)
+        
+        # loop for image pixels
         width, height = img.size
         for x in range(width):
             for y in range(height):
-                # read pixel from image
+                # get pixel colors
                 r, g, b, _ = img.getpixel((x, y))
 
-                # extract message from image pixel
-                binary += bin(r)[-2:]
-                if binary[-self.EOF_LENGTH:] == '0' * self.EOF_LENGTH:
+                # extract message from pixel colors
+                for color in (r, g, b):
+                    binary += format(color, '#010b')[-self.BITS:]
+                    if binary[-self.EOF_LENGTH:] == ('0' * self.EOF_LENGTH):
+                        break
+
+                if binary[-self.EOF_LENGTH:] == ('0' * self.EOF_LENGTH):
                     break
 
-                binary += bin(g)[-2:]
-                if binary[-self.EOF_LENGTH:] == '0' * self.EOF_LENGTH:
-                    break
-
-                binary += bin(b)[-2:]
-                if binary[-self.EOF_LENGTH:] == '0' * self.EOF_LENGTH:
-                    break
-
-            if binary[-self.EOF_LENGTH:] == '0' * self.EOF_LENGTH:
+            if binary[-self.EOF_LENGTH:] == ('0' * self.EOF_LENGTH):
                 break
 
-        return binary[:-self.EOF_LENGTH]
+        return self.__to_text(binary[:-self.EOF_LENGTH])
+        
 
-    def text_to_binary(self, text: str) -> str:
+    def __to_binary(self, text: str) -> str:
         binary = ''
-        encoded_text = text.encode('utf-8')
 
+        encoded_text = text.encode('utf-8')
         for word in encoded_text:
-            byte = bin(word)[2:]
+            byte = format(word, '#010b')[2:]
 
             if len(byte) != 8:
                 byte = '0' * (8 - len(byte)) + byte
@@ -106,7 +107,7 @@ class Steganography:
         
         return binary
 
-    def binary_to_text(self, binary: str) -> str:
+    def __to_text(self, binary: str) -> str:
         text = ''
 
         while binary:
