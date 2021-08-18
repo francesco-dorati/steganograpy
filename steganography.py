@@ -6,7 +6,6 @@ class Steganography:
         exit(1)
 
     def __init__(self, eof=16, bits=2):
-
         self.EOF_LENGTH = eof
         self.BITS = bits
 
@@ -81,13 +80,15 @@ class Steganography:
                 # extract message from pixel colors
                 for color in (r, g, b):
                     binary += format(color, '#010b')[-self.BITS:]
-                    if binary[-self.EOF_LENGTH:] == ('0' * self.EOF_LENGTH):
+
+                    is_last_byte = binary[-self.EOF_LENGTH:] == ('0' * self.EOF_LENGTH) 
+                    if is_last_byte:
                         break
 
-                if binary[-self.EOF_LENGTH:] == ('0' * self.EOF_LENGTH):
+                if is_last_byte:
                     break
 
-            if binary[-self.EOF_LENGTH:] == ('0' * self.EOF_LENGTH):
+            if is_last_byte:
                 break
 
         return self.__to_text(binary[:-self.EOF_LENGTH])
@@ -98,12 +99,7 @@ class Steganography:
 
         encoded_text = text.encode('utf-8')
         for word in encoded_text:
-            byte = format(word, '#010b')[2:]
-
-            if len(byte) != 8:
-                byte = '0' * (8 - len(byte)) + byte
-
-            binary += byte
+            binary += format(word, '#010b')[2:]
         
         return binary
 
