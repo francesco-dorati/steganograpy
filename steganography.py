@@ -2,19 +2,25 @@ class Steganography:
     try:
         from PIL import Image
     except ImportError:
-        print('Missing packages, run `python3 -m pip install -r requirementes.txt`')
+        print('Missing packages, run `python3 -m pip install --upgrade -r requirements.txt`')
         exit(1)
 
     def __init__(self, eof=16, bits=2):
         self.EOF_LENGTH = eof
         self.BITS = bits
 
-    def encode(self, img_path: str, text: str) -> str:
+    def encode(self, img_path: str, text: str, password: str = None) -> str:
         out_name = 'out.png'
 
+        # load images
         img = self.Image.open(img_path)
         out = self.Image.new("RGBA", img.size, 0xffffff)
 
+        # encrypt
+        if password:
+            text = self.__encrypt(text, password)
+
+        # convert to binary
         binary = list(self.__to_binary(text) + ('0' * self.EOF_LENGTH))
 
         # loop for image pixels
@@ -60,9 +66,10 @@ class Steganography:
         return out_name
 
 
-    def decode(self, img_path: str) -> str:
+    def decode(self, img_path: str, password: str = None) -> str:
         binary = ''
 
+        # load image
         img = self.Image.open(img_path)
 
         # check image format
@@ -81,23 +88,30 @@ class Steganography:
                 for color in (r, g, b):
                     binary += format(color, '#010b')[-self.BITS:]
 
-                    is_last_byte = binary[-self.EOF_LENGTH:] == ('0' * self.EOF_LENGTH) 
-                    if is_last_byte:
+                    has_message_ended = binary[-self.EOF_LENGTH:] == ('0' * self.EOF_LENGTH) 
+                    if has_message_ended:
                         break
 
-                if is_last_byte:
+                if has_message_ended:
                     break
 
-            if is_last_byte:
+            if has_message_ended:
                 break
+        
+        # remove padding
+        text = self.__to_text(binary[:-self.EOF_LENGTH])
 
-        return self.__to_text(binary[:-self.EOF_LENGTH])
+        # decrypt
+        if password:
+            text = self.__decrypt(text, password)
+
+        return text
         
 
     def __to_binary(self, text: str) -> str:
         binary = ''
 
-        encoded_text = text.encode('utf-8')
+        encoded_text = text.encode()
         for word in encoded_text:
             binary += format(word, '#010b')[2:]
         
@@ -114,3 +128,52 @@ class Steganography:
             binary = binary[8:]
         
         return text
+    
+    def __encrypt(self, text: str, password: str) -> str:    
+        try:
+            import base64
+            from cryptography.fernet import Fernet
+            from cryptography.hazmat.primitives import hashes
+            from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+        except ImportError:
+            print('Missing packages, run `python3 -m pip install --upgrade -r requirements.txt`')
+            exit(1)
+
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=b'',
+            iterations=100000,
+        )
+
+        key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+
+        return Fernet(key).encrypt(text.encode()).decode()
+
+    def __decrypt(self, encrypted_text: str, password: str) -> str:    
+        try:
+            import base64
+            from cryptography.fernet import Fernet
+            from cryptography.fernet import InvalidToken
+            from cryptography.hazmat.primitives import hashes
+            from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+        except ImportError:
+            print('Missing packages, run `python3 -m pip install --upgrade -r requirements.txt`')
+            exit(1)
+
+        kdf = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=b'',
+            iterations=100000,
+        )
+
+        key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
+
+        try:
+            return Fernet(key).decrypt(encrypted_text.encode()).decode()
+        except InvalidToken:
+            print('Wrong password.')
+            exit(1)
+
+

@@ -10,7 +10,7 @@ def main():
         print_help()
         exit(1)
 
-    opts, _ = getopt(sys.argv[2:], "i:f:m:o:")
+    opts, _ = getopt(sys.argv[2:], "i:f:m:o:p:")
 
     action = sys.argv[1]
     if action not in ['encode', 'decode']:
@@ -20,6 +20,7 @@ def main():
     # check for opt presence
     img_path = None
     message = None
+    password = None
     for opt in opts:
         if opt[0] == '-i':
             img_path = opt[1]
@@ -30,21 +31,23 @@ def main():
 
         elif opt[0] == '-m':
             message = opt[1]
+
+        elif opt[0] == '-p':
+            password = opt[1]
     
 
     s = Steganography()
 
     if action == 'encode':    
-        # text
         if not message:
-            text = input('Text: ')
+            text = input('Message: ')
  
-        outfile = s.encode(img_path, message)
+        outfile = s.encode(img_path, message, password)
         print(f'New file created: {outfile}')
 
     else:
-        text = s.decode(img_path)
-        print(f'Text: {text}')
+        text = s.decode(img_path, password)
+        print(f'Message: {text}')
     
 
 def print_help():
@@ -52,8 +55,8 @@ def print_help():
 Steganography
 
     Usage:
-        steganograpy encode [-i image] [-f textfile | -m message]
-        steganograpy decode -i image
+        steganograpy encode [-i image] [-f textfile | -m message] [-p password]
+        steganograpy decode -i image [-p password]
     """)
 
 if __name__ == '__main__':
