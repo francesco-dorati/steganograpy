@@ -6,10 +6,26 @@ class Steganography:
         exit(1)
 
     def __init__(self, eof=16, bits=2):
+        """Initalizes the Steganograpy object. 
+
+        Args:
+            eof (int, optional): the length of the leading zeroes of the hidden message. Defaults to 16.
+            bits (int, optional): the number of bits used for the message. Defaults to 2.
+        """
         self.EOF_LENGTH = eof
         self.BITS = bits
 
     def encode(self, img_path: str, text: str, password: str = None) -> str:
+        """Hides text inside an image using LSB algorithm.
+
+        Args:
+            img_path (str): the path of the image.
+            text (str): the text to be concealed.
+            password (str, optional): the text encryption password. Defaults to None.
+
+        Returns:
+            out_name (str): the filename of the message containing image.
+        """
         out_name = 'out.png'
 
         # load images
@@ -67,6 +83,15 @@ class Steganography:
 
 
     def decode(self, img_path: str, password: str = None) -> str:
+        """Extracts the hidden message from an image.
+
+        Args:
+            img_path (str): the path of the image containing the message.
+            password (str, optional): the encryption password of the hidden message. Defaults to None.
+
+        Returns:
+            message (str): the hidden message.
+        """
         binary = ''
 
         # load image
@@ -109,6 +134,14 @@ class Steganography:
         
 
     def __to_binary(self, text: str) -> str:
+        """Converts text to binary.
+
+        Args:
+            text (str): the string to be converted.
+
+        Returns:
+            binary (str): the binary representation of the given string.
+        """
         binary = ''
 
         encoded_text = text.encode()
@@ -118,6 +151,14 @@ class Steganography:
         return binary
 
     def __to_text(self, binary: str) -> str:
+        """Converts a binary string to text.
+
+        Args:
+            binary (str): the binary string.
+
+        Returns:
+            text (str): the text represented by the binary string.
+        """
         text = ''
 
         while binary:
@@ -129,7 +170,16 @@ class Steganography:
         
         return text
     
-    def __encrypt(self, text: str, password: str) -> str:    
+    def __encrypt(self, text: str, password: str) -> str:
+        """Encrypts the given string with a password using SHA256.
+
+        Args:
+            text (str): the string to be encrypted.
+            password (str): the encryption password.
+
+        Returns:
+            encrypted_text (str): the string encrypted with the given password.
+        """
         try:
             import base64
             from cryptography.fernet import Fernet
@@ -150,7 +200,17 @@ class Steganography:
 
         return Fernet(key).encrypt(text.encode()).decode()
 
-    def __decrypt(self, encrypted_text: str, password: str) -> str:    
+    def __decrypt(self, encrypted_text: str, password: str) -> str:
+        """Decrypts the given password encrypted string using SHA256.
+
+        Args:
+            encrypted_text (str): the encrypted string.
+            password (str): the encryption password.
+
+        Returns:
+            text (str): the unencrypted string.
+
+        """ 
         try:
             import base64
             from cryptography.fernet import Fernet
