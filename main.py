@@ -341,8 +341,8 @@ def print_help():
 Steganography
 
     Usage:
-        {sys.argv[0]} [encode [-i image] [-f textfile | -m message] [-p password] [-b bits] [-e padding]]
-        {sys.argv[0]} [decode [-i image] [-p password] [-b bits] [-e padding]]
+        {sys.argv[0]} [encode [-i image] [-f textfile | -m message] [-p password]] [-b bits] [-e padding]
+        {sys.argv[0]} [decode [-i image] [-p password]] [-b bits] [-e padding]
 
     Args:
         -i image        Image path to be encoded/decoded.
