@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import sys
 import os
 import imghdr
@@ -18,14 +16,13 @@ def main():
 
     s = Steganography()
 
-    # read args
     if len(sys.argv) > 1:
         action = sys.argv[1].lower()
         if action not in ['encode', 'decode']:
             print_help()
             exit(1)
 
-        opts, _ = getopt(sys.argv[2:], "i:f:m:o:p:")
+        opts, _ = getopt(sys.argv[2:], "i:f:m:p:")
 
         for opt in opts:
             if opt[0] == '-i':
@@ -51,7 +48,6 @@ def main():
 
     if not action:
         action = choose_action()
-
 
     if action == 'encode':
         if not img_path:
@@ -87,6 +83,11 @@ def main():
 
 
 def choose_action() -> str:
+    """Asks the action (encode, decode) to the user.
+
+    Returns:
+        action (str): the action chosen by the user.
+    """
     print("""
 \033[1mChoose action:\033[0m
     [1]\033[0;3m Encode\033[0m
@@ -104,6 +105,14 @@ def choose_action() -> str:
     return 'encode' if a == '1' else 'decode'
 
 def choose_image(accepted_formats: list) -> str:
+    """Asks the image path to the user.
+
+    Args:
+        accepted_formats (list): a list with accepted image formats.
+
+    Returns:
+        img_path (str): the path of the chosen image.
+    """
     while True:
         path = input('\n\033[1mInsert the path of the image: \033[0;2m(0 to exit)\033[0m ')
 
@@ -119,6 +128,15 @@ def choose_image(accepted_formats: list) -> str:
     return path
 
 def is_valid_image(image_path: str, accepted_formats: list) -> bool:
+    """Checks if the user given image path is valid.
+
+    Args:
+        image_path (str): the path of the user given image.
+        accepted_formats (list): a list with accepted image formats.
+
+    Returns:
+        is_valid (bool): if the image is valid.
+    """
     if not os.path.isfile(image_path):
         print(f'\033[0;31mFile "{os.path.abspath(image_path)}" does not exist.\033[0m')
         return False
@@ -131,6 +149,11 @@ def is_valid_image(image_path: str, accepted_formats: list) -> bool:
     return True
 
 def choose_message() -> str:
+    """Asks the message to the user.
+
+    Returns:
+        message (str): the message given by the user.
+    """
     while True:
         print("""
 \033[1mChoose message type:\033[0m
@@ -169,6 +192,14 @@ def choose_message() -> str:
                 return file.read()
 
 def is_valid_textfile(textfile_path: str) -> bool:
+    """Chack if the user given textfile path is valid.
+
+    Args:
+        textfile_path (str): the path of the textfile.
+
+    Returns:
+        is_valid (bool): if the textfile path is valid.
+    """
     if not os.path.isfile(textfile_path):
         print(f'\033[0;31mFile "{os.path.abspath(textfile_path)}" does not exist.\033[0m')
         return False
@@ -180,6 +211,14 @@ def is_valid_textfile(textfile_path: str) -> bool:
     return True
 
 def choose_password(message: str) -> str:
+    """Asks the user for the encryption password.
+
+    Args:
+        message (str): the question asked by the function.
+
+    Returns:
+        password (str | None): the password given by the user.
+    """
     while True:
         print(f"""
 \033[1m{message}\033[0m
@@ -204,8 +243,8 @@ def choose_password(message: str) -> str:
         elif p == '2':
             return None
 
-
 def print_help():
+    """Prints the help message."""
     print("""
 Steganography
 
@@ -215,6 +254,7 @@ Steganography
     """)
 
 def print_title():
+    """Prints the title."""
     print("""\033[0;35m
     .▄▄ · ▄▄▄▄▄▄▄▄ . ▄▄ •  ▄▄▄·  ▐ ▄        ▄▄ • ▄▄▄   ▄▄▄·  ▄▄▄· ▄ .▄ ▄· ▄▌
     ▐█ ▀. •██  ▀▄.▀·▐█ ▀ ▪▐█ ▀█ •█▌▐█ ▄█▀▄ ▐█ ▀ ▪▀▄ █·▐█ ▀█ ▐█ ▄███▪▐█▐█▪██▌
