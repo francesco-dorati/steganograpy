@@ -18,8 +18,8 @@ def main():
     password = None
 
     if len(sys.argv) > 1:
-        action = sys.argv[1].lower()
-        if action in ['encode', 'decode']:
+        if sys.argv[1].lower() in ['encode', 'decode']:
+            action = sys.argv[1].lower()
             opts, _ = getopt(sys.argv[2:], "i:f:m:p:b:e:")
 
             for opt in opts:
@@ -58,7 +58,6 @@ def main():
                         exit()
 
         else:
-            action = None
             opts, _ = getopt(sys.argv[1:], "b:e:")
             for opt in opts:
                 if opt[0] == '-b':
