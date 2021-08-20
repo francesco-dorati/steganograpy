@@ -131,11 +131,12 @@ def choose_action() -> str:
     [1]\033[0;3m Encode\033[0m
     [2]\033[0;3m Decode\033[0m
     [3]\033[0;3m Settings\033[0m
+    [4]\033[0;3m Help\033[0m
     [0]\033[0;3m Exit\033[0m
     """)
         
         a = None
-        while a not in ['1', '2', '3', '0']:
+        while a not in ['1', '2', '3', '4', '0']:
             a = input('> ')
 
         if a == '0':
@@ -146,6 +147,9 @@ def choose_action() -> str:
             return 'decode'
         elif a == '3':
             settings()
+        elif a == '4':
+            print_help()
+            exit()
 
 
 def settings():
@@ -337,19 +341,22 @@ def choose_password(message: str) -> str:
 def print_help():
     """Prints the help message."""
     print(f"""
-Steganography
+\033[1mSteganography\033[0m
 
-    Usage:
-        {sys.argv[0]} [encode [-i image] [-f textfile | -m message] [-p password]] [-b bits] [-e padding]
-        {sys.argv[0]} [decode [-i image] [-p password]] [-b bits] [-e padding]
+This program allows you to hide messages inside images using the LSB algorithm which allows you to hide data in the least significat bits of the image.
+For more info check the GitHub repo: https://github.com/francesco-dorati/steganograpy
 
-    Args:
-        -i image        Image path to be encoded/decoded.
-        -f textfile     Textfile (.txt) to be hidden.
-        -m message      The mesage to be hidden.
-        -p password     The password to encrypt/decrypt the hidden message.
-        -b bits         The number of image pixel bits reserved for the hidden message.
-        -e padding      The end-of-message padding (number of zeroes).
+\033[1mUsage:\033[0m
+    {sys.argv[0]} [encode [-i image] [-f textfile | -m message] [-p password]] [-b bits] [-e padding]
+    {sys.argv[0]} [decode [-i image] [-p password]] [-b bits] [-e padding]
+
+\033[1mArgs:\033[0m
+    -i image        Image path to be encoded/decoded.
+    -f textfile     Textfile (.txt) to be hidden.
+    -m message      The mesage to be hidden.
+    -p password     The password to encrypt/decrypt the hidden message.
+    -b bits         The number of image pixel bits reserved for the hidden message.
+    -e padding      The end-of-message padding (number of zeroes).
     """)
 
 def print_title():
