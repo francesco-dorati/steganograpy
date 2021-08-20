@@ -17,7 +17,9 @@ def main():
     message = None
     password = None
 
+    # read args
     if len(sys.argv) > 1:
+        # action in args
         if sys.argv[1].lower() in ['encode', 'decode']:
             action = sys.argv[1].lower()
             opts, _ = getopt(sys.argv[2:], "i:f:m:p:b:e:")
@@ -57,6 +59,7 @@ def main():
                         print('\033[0;31mInvalid padding length.\033[0m')
                         exit()
 
+        # no action in args
         else:
             opts, _ = getopt(sys.argv[1:], "b:e:")
             for opt in opts:
@@ -86,6 +89,7 @@ def main():
     if not action:
         action = choose_action()
 
+    # encode
     if action == 'encode':
         if not img_path:
             img_path = choose_image(ACCEPTED_FORMATS)
@@ -103,6 +107,7 @@ def main():
         print('\033[1;32mImage successfully encoded!\033[0m')
         print(f'\nThe encoded image is: \033[1m{outfile_name}\033[0m\n')
 
+    # decode
     elif action == 'decode':
         if not img_path:
             img_path = choose_image(['png'])
