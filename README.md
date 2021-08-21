@@ -6,6 +6,7 @@
 
 <h4 align="center">A program to hide text messages inside images.</h4>
 
+<p align="center">Steganography is the art of hiding a secret message within a normal message. This is used to transfer some secret message to another person; with this technique, no one else in between will know the secret message you wanted to convey.</p>
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
@@ -16,6 +17,9 @@
   <a href="#packages">Packages</a> •
   <a href="#license">License</a>
 </p>
+
+<img width="1130" alt="Schermata 2021-08-20 alle 23 30 13" src="https://user-images.githubusercontent.com/36961170/130329613-309cb960-f23b-4513-a2f0-b100e599bf77.png">
+
 
 ## Key Features
 
