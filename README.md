@@ -31,9 +31,7 @@
   - Text messages are encrypted/decrypted using SHA256.
 * **Allow custom number of bits encoding**  
   - Default for LSB is 2.
-* **Interactive mode**
-* **Supports JPEG, PNG images**
-* **Supports TXT files**
+* **Supports JPEG, PNG for images and TXT for text**
 * **Lightweight and fast**
 
 
